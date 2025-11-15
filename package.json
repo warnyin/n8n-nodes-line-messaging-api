@@ -1,5 +1,5 @@
 {
-  "name": "n8n-nodes-line-messaging-api",
+  "name": "@warnyin/n8n-nodes-line-messaging-api",
   "version": "0.1.0",
   "description": "n8n node for LINE Messaging API integration",
   "keywords": [
@@ -10,6 +10,9 @@
     "line-messaging-api"
   ],
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "homepage": "https://github.com/warnyin/n8n-nodes-line-messaging-api",
   "author": {
     "name": "warnyin",
