@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2025-11-15
+
+### Added
+- **Customizable Webhook Path in LINE Trigger Node**
+  - New "Webhook Path" parameter as first field in LINE Trigger node
+  - Configure custom webhook path directly in the node (default: "line")
+  - Webhook URL format: `https://your-n8n-url/webhook/{custom-path}`
+  - Each LINE Trigger node can use a different webhook path
+  - Full webhook URL with copy button shown automatically in the node
+
+### Changed
+- LINE Trigger webhook path is now configurable per node instead of hardcoded
+- Improved user experience with path customization at the node level
+
+### Benefits
+- **Flexible configuration**: Each workflow can use different webhook paths
+- **Meaningful paths**: Use descriptive names like "line-sales", "line-support", etc.
+- **Easy to use**: Configure directly in the node, no credential changes needed
+- **Copy button included**: n8n automatically shows the full URL with copy functionality
+
 ## [0.4.1] - 2025-11-15
 
 ### Removed
