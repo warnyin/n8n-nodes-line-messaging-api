@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] - 2025-11-15
+
+### Fixed
+- **Production Webhook URL**
+  - Added `restartWebhook: true` to webhook configuration
+  - Webhook URL now uses production format without workflow ID
+  - Changed from: `https://your-n8n-url/webhook-test/{workflow-id}/{path}`
+  - To: `https://your-n8n-url/webhook/{path}`
+  - Webhook persists across workflow restarts
+
+### Benefits
+- **Cleaner URLs**: Production webhook URLs without workflow ID
+- **Persistent webhook**: Works even when workflow is restarted
+- **Better for production**: Stable URL for LINE Developers Console
+
 ## [0.5.0] - 2025-11-15
 
 ### Added
