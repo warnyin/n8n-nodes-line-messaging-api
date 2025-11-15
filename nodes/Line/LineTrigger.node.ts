@@ -34,7 +34,7 @@ export class LineTrigger implements INodeType {
 				name: 'default',
 				httpMethod: 'POST',
 				responseMode: 'onReceived',
-				path: 'webhook',
+				path: '={{$parameter["path"]}}',
 			},
 		],
 		properties: [
@@ -42,7 +42,7 @@ export class LineTrigger implements INodeType {
 				displayName: 'Path',
 				name: 'path',
 				type: 'string',
-				default: '',
+				default: 'line',
 				placeholder: 'line',
 				required: true,
 				description:
