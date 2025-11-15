@@ -61,14 +61,18 @@ export class LineMessagingApi implements ICredentialType {
 		this: ICredentialTestFunctions,
 		credentials: ICredentialsDecrypted,
 	): Promise<INodeCredentialTestResult> {
+		console.log('[LINE Messaging API] Testing credentials...');
 		const channelAccessToken = credentials.data?.channelAccessToken as string;
 
 		if (!channelAccessToken) {
+			console.log('[LINE Messaging API] Error: Channel Access Token is missing');
 			return {
 				status: 'Error',
-				message: 'Channel Access Token is missing',
+				message: 'Channel Access Token is missing. Please enter your token from LINE Developers Console.',
 			};
 		}
+
+		console.log(`[LINE Messaging API] Token starts with: ${channelAccessToken.substring(0, 10)}...`);
 
 		try {
 			const options = {
@@ -80,22 +84,33 @@ export class LineMessagingApi implements ICredentialType {
 				url: 'https://api.line.me/v2/bot/info',
 			};
 
-			await this.helpers.request(options);
+			console.log('[LINE Messaging API] Calling LINE API...');
+			const response: any = await this.helpers.request(options);
+			console.log('[LINE Messaging API] Success! Bot info:', response);
 
 			return {
 				status: 'OK',
-				message: 'Authentication successful',
+				message: `✅ Connection successful! Bot: ${response.displayName || 'Connected'}`,
 			};
 		} catch (error: any) {
+			console.error('[LINE Messaging API] Test failed:', error);
+
 			const errorMessage = error.response?.body?.message || error.message || 'Unknown error';
 			const statusCode = error.statusCode || error.response?.statusCode || 'N/A';
-			const errorDetails = error.response?.body ? JSON.stringify(error.response.body) : '';
+			const errorDetails = error.response?.body ? JSON.stringify(error.response.body, null, 2) : '';
 
 			return {
 				status: 'Error',
-				message: `LINE API Error (${statusCode}): ${errorMessage}${
-					errorDetails ? `\n\nDetails: ${errorDetails}` : ''
-				}\n\nToken (first 10 chars): ${channelAccessToken.substring(0, 10)}...`,
+				message: `❌ LINE API Error (Status: ${statusCode}):
+
+${errorMessage}
+
+${errorDetails ? `Response Details:\n${errorDetails}\n\n` : ''}Token (first 10 chars): ${channelAccessToken.substring(0, 10)}...
+
+Troubleshooting:
+- Verify your Channel Access Token from LINE Developers Console
+- Ensure it's a long-lived token (not expired)
+- Check you're using the correct channel`,
 			};
 		}
 	};
