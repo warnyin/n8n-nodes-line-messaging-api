@@ -49,7 +49,7 @@ export class LineMessagingApi implements ICredentialType {
 		type: 'generic',
 		properties: {
 			headers: {
-				Authorization: '={{"Bearer " + $credentials.channelAccessToken}}',
+				Authorization: '=Bearer {{$credentials.channelAccessToken}}',
 			},
 		},
 	};
@@ -57,8 +57,7 @@ export class LineMessagingApi implements ICredentialType {
 	test: ICredentialTestRequest = {
 		request: {
 			method: 'GET',
-			baseURL: 'https://api.line.me/v2',
-			url: '/bot/info',
+			url: 'https://api.line.me/v2/bot/info',
 		},
 	};
 }

@@ -16,7 +16,8 @@
       "Bash(npm install:*)",
       "Bash(npm view:*)",
       "Bash(npm org:*)",
-      "Bash(npm search:*)"
+      "Bash(npm search:*)",
+      "WebFetch(domain:developers.line.biz)"
     ],
     "deny": [],
     "ask": []
