@@ -1,6 +1,6 @@
 {
   "name": "@warnyin/n8n-nodes-line-messaging-api",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "n8n node for LINE Messaging API integration",
   "keywords": [
     "n8n-community-node-package",
@@ -40,7 +40,8 @@
       "dist/credentials/LineMessagingApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/Line/Line.node.js"
+      "dist/nodes/Line/Line.node.js",
+      "dist/nodes/Line/LineTrigger.node.js"
     ]
   },
   "devDependencies": {

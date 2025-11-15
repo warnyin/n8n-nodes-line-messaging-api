@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2025-11-15
+
+### Added
+- **NEW: LINE Trigger Node** - Dedicated webhook receiver for LINE events
+  - Supports all LINE webhook events (message, follow, unfollow, join, leave, memberJoined, memberLeft, postback, beacon, accountLink, things)
+  - Built-in signature verification for security
+  - Filter events by type (multi-select)
+  - Automatically parses and structures event data
+  - Extracts message content based on type (text, image, video, audio, location, sticker, file)
+  - Provides replyToken for easy message replies
+  - Clean, structured output for each event type
+
+### Breaking Changes
+- None (this is a new feature addition)
+
 ## [0.1.6] - 2025-11-15
 
 ### Added
