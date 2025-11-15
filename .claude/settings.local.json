@@ -10,7 +10,13 @@
       "Bash(git push:*)",
       "Bash(npm install)",
       "Bash(npm run build:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(npm whoami:*)",
+      "Bash(npm publish)",
+      "Bash(npm install:*)",
+      "Bash(npm view:*)",
+      "Bash(npm org:*)",
+      "Bash(npm search:*)"
     ],
     "deny": [],
     "ask": []

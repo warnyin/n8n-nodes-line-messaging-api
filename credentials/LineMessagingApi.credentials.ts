@@ -11,6 +11,21 @@ export class LineMessagingApi implements ICredentialType {
 	documentationUrl = 'https://developers.line.biz/en/docs/messaging-api/';
 	properties: INodeProperties[] = [
 		{
+			displayName: 'Webhook URL Setup',
+			name: 'webhookNotice',
+			type: 'notice',
+			default: '',
+			displayOptions: {
+				show: {},
+			},
+		},
+		{
+			displayName: 'To receive messages from LINE, create a Webhook node in n8n and paste its URL into the LINE Developers Console under Messaging API > Webhook URL. The webhook will receive LINE events that you can process and reply to using this node.',
+			name: 'webhookInfo',
+			type: 'notice',
+			default: '',
+		},
+		{
 			displayName: 'Channel Access Token',
 			name: 'channelAccessToken',
 			type: 'string',
