@@ -1,8 +1,10 @@
-import {
+import type {
 	IAuthenticateGeneric,
-	ICredentialTestRequest,
+	ICredentialTestFunctions,
 	ICredentialType,
 	INodeProperties,
+	ICredentialsDecrypted,
+	INodeCredentialTestResult,
 } from 'n8n-workflow';
 
 export class LineMessagingApi implements ICredentialType {
@@ -54,10 +56,47 @@ export class LineMessagingApi implements ICredentialType {
 		},
 	};
 
-	test: ICredentialTestRequest = {
-		request: {
-			method: 'GET',
-			url: 'https://api.line.me/v2/bot/info',
-		},
+	// @ts-ignore - n8n supports function tests despite the type definition
+	test = async function (
+		this: ICredentialTestFunctions,
+		credentials: ICredentialsDecrypted,
+	): Promise<INodeCredentialTestResult> {
+		const channelAccessToken = credentials.data?.channelAccessToken as string;
+
+		if (!channelAccessToken) {
+			return {
+				status: 'Error',
+				message: 'Channel Access Token is missing',
+			};
+		}
+
+		try {
+			const options = {
+				method: 'GET' as const,
+				headers: {
+					Authorization: `Bearer ${channelAccessToken}`,
+					'Content-Type': 'application/json',
+				},
+				url: 'https://api.line.me/v2/bot/info',
+			};
+
+			await this.helpers.request(options);
+
+			return {
+				status: 'OK',
+				message: 'Authentication successful',
+			};
+		} catch (error: any) {
+			const errorMessage = error.response?.body?.message || error.message || 'Unknown error';
+			const statusCode = error.statusCode || error.response?.statusCode || 'N/A';
+			const errorDetails = error.response?.body ? JSON.stringify(error.response.body) : '';
+
+			return {
+				status: 'Error',
+				message: `LINE API Error (${statusCode}): ${errorMessage}${
+					errorDetails ? `\n\nDetails: ${errorDetails}` : ''
+				}\n\nToken (first 10 chars): ${channelAccessToken.substring(0, 10)}...`,
+			};
+		}
 	};
 }

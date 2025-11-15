@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2025-11-15
+
+### Added
+- Detailed error logging in credential test
+- Shows HTTP status code, error message, and response details
+- Displays first 10 characters of token for verification
+
+### Changed
+- Replaced simple credential test with custom test function
+- Better error messages to help debug authentication issues
+
 ## [0.1.3] - 2025-11-15
 
 ### Fixed
