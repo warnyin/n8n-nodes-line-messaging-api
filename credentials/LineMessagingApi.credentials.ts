@@ -56,6 +56,7 @@ export class LineMessagingApi implements ICredentialType {
 
 	test: ICredentialTestRequest = {
 		request: {
+			method: 'GET',
 			baseURL: 'https://api.line.me/v2',
 			url: '/bot/info',
 		},
