@@ -451,7 +451,8 @@ export class Line implements INodeType {
 					const altText = this.getNodeParameter('altText', itemIndex) as string;
 					const flexContents = this.getNodeParameter('flexContents', itemIndex) as string;
 					message.altText = altText;
-					message.contents = typeof flexContents === 'string' ? JSON.parse(flexContents) : flexContents;
+					message.contents =
+						typeof flexContents === 'string' ? JSON.parse(flexContents) : flexContents;
 					break;
 			}
 

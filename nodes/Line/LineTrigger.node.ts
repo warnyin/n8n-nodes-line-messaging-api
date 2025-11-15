@@ -34,7 +34,7 @@ export class LineTrigger implements INodeType {
 				name: 'default',
 				httpMethod: 'POST',
 				responseMode: 'onReceived',
-				path: 'webhook',
+				path: '={{$credentials.webhookPath || "webhook"}}',
 			},
 		],
 		properties: [
@@ -108,17 +108,8 @@ export class LineTrigger implements INodeType {
 				displayName: 'Webhook URL Info',
 				name: 'webhookInfo',
 				type: 'notice',
-				default: '',
-				displayOptions: {
-					show: {},
-				},
-			},
-			{
-				displayName:
-					'Copy the webhook URL above and paste it into LINE Developers Console under Messaging API > Webhook URL. Make sure to enable "Use webhook" and verify the URL.',
-				name: 'webhookInstructions',
-				type: 'notice',
-				default: '',
+				default:
+					'📋 Copy the webhook URL shown above and paste it into LINE Developers Console:\n\n1. Go to LINE Developers Console\n2. Select your channel → Messaging API tab\n3. Under Webhook settings → Edit\n4. Paste the webhook URL\n5. Enable "Use webhook"\n6. Click "Verify" to test\n\n💡 The webhook path is configured in your LINE Messaging API credential settings.',
 			},
 			{
 				displayName: 'Download Binary Content',

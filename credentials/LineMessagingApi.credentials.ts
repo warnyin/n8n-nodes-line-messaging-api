@@ -13,21 +13,6 @@ export class LineMessagingApi implements ICredentialType {
 	documentationUrl = 'https://developers.line.biz/en/docs/messaging-api/';
 	properties: INodeProperties[] = [
 		{
-			displayName: 'Webhook URL Setup',
-			name: 'webhookNotice',
-			type: 'notice',
-			default: '',
-			displayOptions: {
-				show: {},
-			},
-		},
-		{
-			displayName: 'To receive messages from LINE, create a Webhook node in n8n and paste its URL into the LINE Developers Console under Messaging API > Webhook URL. The webhook will receive LINE events that you can process and reply to using this node.',
-			name: 'webhookInfo',
-			type: 'notice',
-			default: '',
-		},
-		{
 			displayName: 'Channel Access Token',
 			name: 'channelAccessToken',
 			type: 'string',
@@ -44,6 +29,23 @@ export class LineMessagingApi implements ICredentialType {
 			default: '',
 			required: true,
 			description: 'The Channel Secret for your LINE Messaging API channel',
+		},
+		{
+			displayName: 'Webhook Configuration',
+			name: 'webhookNotice',
+			type: 'notice',
+			default: '',
+		},
+		{
+			displayName: 'Webhook Path',
+			name: 'webhookPath',
+			type: 'string',
+			default: 'line',
+			required: true,
+			placeholder: 'line',
+			description:
+				'Custom path for your LINE webhook. Your webhook URL will be: https://your-n8n-url/webhook/[this-path]',
+			hint: 'This path will be used in the LINE Trigger node. After saving, add a LINE Trigger node to your workflow to get the full webhook URL.',
 		},
 	];
 
@@ -68,11 +70,14 @@ export class LineMessagingApi implements ICredentialType {
 			console.log('[LINE Messaging API] Error: Channel Access Token is missing');
 			return {
 				status: 'Error',
-				message: 'Channel Access Token is missing. Please enter your token from LINE Developers Console.',
+				message:
+					'Channel Access Token is missing. Please enter your token from LINE Developers Console.',
 			};
 		}
 
-		console.log(`[LINE Messaging API] Token starts with: ${channelAccessToken.substring(0, 10)}...`);
+		console.log(
+			`[LINE Messaging API] Token starts with: ${channelAccessToken.substring(0, 10)}...`,
+		);
 
 		try {
 			const options = {

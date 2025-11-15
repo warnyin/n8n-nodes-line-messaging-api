@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2025-11-15
+
+### Added
+- **Customizable Webhook Path in Credentials**
+  - New "Webhook Path" field in LINE Messaging API credentials
+  - Configure custom webhook path (default: "line")
+  - Webhook URL format: `https://your-n8n-url/webhook/{custom-path}`
+  - Path is automatically used in LINE Trigger node
+  - Easier setup with consistent path across workflows
+
+### Changed
+- LINE Trigger node now reads webhook path from credentials instead of hardcoded "webhook"
+- Updated credential UI with better webhook configuration instructions
+- Improved webhook setup guidance in LINE Trigger node
+
+### Benefits
+- **Consistent configuration**: Set webhook path once in credentials, use everywhere
+- **Custom paths**: Use meaningful paths like "line-bot", "line-webhook", etc.
+- **Better organization**: Different LINE channels can use different webhook paths
+
 ## [0.3.0] - 2025-11-15
 
 ### Added
