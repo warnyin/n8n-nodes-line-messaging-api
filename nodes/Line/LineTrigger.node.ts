@@ -35,6 +35,7 @@ export class LineTrigger implements INodeType {
 				httpMethod: 'POST',
 				responseMode: 'onReceived',
 				path: '={{$parameter["path"]}}',
+				isFullPath: true,
 			},
 		],
 		properties: [
