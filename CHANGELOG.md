@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.2] - 2025-11-15
+
+### Fixed
+- **Webhook URL Display Issue**
+  - Removed `restartWebhook: true` property that was causing webhook URLs to not display
+  - Webhook URLs now show properly in the node
+  - Note: URLs will use test mode format with workflow ID until workflow is activated
+
 ## [0.5.1] - 2025-11-15
 
 ### Fixed

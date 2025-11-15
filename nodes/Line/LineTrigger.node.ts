@@ -34,21 +34,19 @@ export class LineTrigger implements INodeType {
 				name: 'default',
 				httpMethod: 'POST',
 				responseMode: 'onReceived',
-				path: '={{$parameter["path"]}}',
-				restartWebhook: true,
+				path: 'webhook',
 			},
 		],
 		properties: [
 			{
-				displayName: 'Webhook Path',
+				displayName: 'Path',
 				name: 'path',
 				type: 'string',
-				default: 'line',
-				required: true,
+				default: '',
 				placeholder: 'line',
+				required: true,
 				description:
-					'Custom path for your LINE webhook. This will create a webhook URL like: https://your-n8n-url/webhook/[path]',
-				hint: 'Use a meaningful path name like "line", "line-bot", or "my-line-webhook". After setting, copy the full webhook URL shown above.',
+					'The path to listen to, e.g., "line" will create https://your-n8n-url/webhook/line',
 			},
 			{
 				displayName: 'Events',
