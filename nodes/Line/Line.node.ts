@@ -79,6 +79,12 @@ export class Line implements INodeType {
 						description: 'Send message to all users',
 						action: 'Broadcast a message',
 					},
+					{
+						name: 'Get Content',
+						value: 'getContent',
+						description: 'Get binary content (image, video, audio, file) from message',
+						action: 'Get message content',
+					},
 				],
 				default: 'push',
 			},
@@ -350,6 +356,37 @@ export class Line implements INodeType {
 				required: true,
 				description: 'The flex message container in JSON format',
 			},
+			// Message:Get Content fields
+			{
+				displayName: 'Message ID',
+				name: 'messageId',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['message'],
+						operation: ['getContent'],
+					},
+				},
+				default: '',
+				required: true,
+				description: 'The message ID from LINE webhook event (e.g., from LINE Trigger output)',
+				placeholder: 'e.g., {{ $json.message.id }}',
+			},
+			{
+				displayName: 'Download as Binary',
+				name: 'binaryProperty',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['message'],
+						operation: ['getContent'],
+					},
+				},
+				default: 'data',
+				required: true,
+				description: 'Name of the binary property to store the downloaded content',
+				placeholder: 'data',
+			},
 			// Profile:Get fields
 			{
 				displayName: 'User ID',
@@ -429,6 +466,45 @@ export class Line implements INodeType {
 				let responseData;
 
 				if (resource === 'message') {
+					if (operation === 'getContent') {
+						// Get binary content from LINE
+						const messageId = this.getNodeParameter('messageId', i) as string;
+						const binaryPropertyName = this.getNodeParameter('binaryProperty', i) as string;
+
+						const response = await this.helpers.httpRequestWithAuthentication.call(
+							this,
+							'lineMessagingApi',
+							{
+								method: 'GET',
+								url: `https://api-data.line.me/v2/bot/message/${messageId}/content`,
+								encoding: 'arraybuffer',
+								json: false,
+								returnFullResponse: true,
+							},
+						);
+
+						const binaryData = await this.helpers.prepareBinaryData(
+							response.body as Buffer,
+							undefined,
+							response.headers['content-type'] as string,
+						);
+
+						const newItem: INodeExecutionData = {
+							json: {
+								messageId,
+								mimeType: response.headers['content-type'],
+								size: (response.body as Buffer).length,
+							},
+							binary: {
+								[binaryPropertyName]: binaryData,
+							},
+							pairedItem: { item: i },
+						};
+
+						returnData.push(newItem);
+						continue;
+					}
+
 					const messageType = this.getNodeParameter('messageType', i) as string;
 					const message = buildMessage(messageType, i);
 
