@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2025-11-15
+
+### Removed
+- **Webhook Configuration from Credentials** (Reverted changes from 0.4.0)
+  - Removed "Webhook Path" field from LINE Messaging API credentials
+  - Removed "Webhook Configuration" notice from credentials
+  - Simplified credential setup back to just Channel Access Token and Channel Secret
+
+### Changed
+- LINE Trigger node webhook path reverted to hardcoded `"webhook"`
+- Webhook URL format back to: `https://your-n8n-url/webhook/webhook`
+- Simplified webhook setup instructions in LINE Trigger node
+
+### Reason for Revert
+- Webhook URL with copy button is already available in the LINE Trigger node itself
+- No need for additional configuration in credentials
+- Simpler and cleaner user experience
+
 ## [0.4.0] - 2025-11-15
 
 ### Added

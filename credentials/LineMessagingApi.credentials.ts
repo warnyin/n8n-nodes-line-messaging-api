@@ -30,23 +30,6 @@ export class LineMessagingApi implements ICredentialType {
 			required: true,
 			description: 'The Channel Secret for your LINE Messaging API channel',
 		},
-		{
-			displayName: 'Webhook Configuration',
-			name: 'webhookNotice',
-			type: 'notice',
-			default: '',
-		},
-		{
-			displayName: 'Webhook Path',
-			name: 'webhookPath',
-			type: 'string',
-			default: 'line',
-			required: true,
-			placeholder: 'line',
-			description:
-				'Custom path for your LINE webhook. Your webhook URL will be: https://your-n8n-url/webhook/[this-path]',
-			hint: 'This path will be used in the LINE Trigger node. After saving, add a LINE Trigger node to your workflow to get the full webhook URL.',
-		},
 	];
 
 	authenticate: IAuthenticateGeneric = {
