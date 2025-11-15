@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2025-11-15
+
+### Added
+- **LINE Trigger: Auto-download Binary Content** (NEW Feature!)
+  - New option "Download Binary Content" in LINE Trigger node
+  - Automatically downloads binary files (image, video, audio, file) when user sends them
+  - Configurable binary property name (default: "data")
+  - Binary data ready to use immediately in workflow
+  - Includes metadata in JSON output: `binaryDownloaded`, `mimeType`, `size`
+  - Error handling with `binaryDownloadError` field if download fails
+
+### Changed
+- LINE Trigger now returns data with proper binary/json structure
+- Enhanced output includes download status and file information
+
+### Benefits
+- **No extra node needed**: Previously required LINE node with "Get Content" operation
+- **Simpler workflows**: One-step process to receive and download media
+- **Optional feature**: Can be disabled to use the traditional two-step approach
+
 ## [0.2.1] - 2025-11-15
 
 ### Added

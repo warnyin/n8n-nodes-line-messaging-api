@@ -46,7 +46,8 @@ export class LineTrigger implements INodeType {
 					{
 						name: 'Message',
 						value: 'message',
-						description: 'When user sends a message (text, image, video, audio, location, sticker, file)',
+						description:
+							'When user sends a message (text, image, video, audio, location, sticker, file)',
 					},
 					{
 						name: 'Follow',
@@ -113,10 +114,31 @@ export class LineTrigger implements INodeType {
 				},
 			},
 			{
-				displayName: 'Copy the webhook URL above and paste it into LINE Developers Console under Messaging API > Webhook URL. Make sure to enable "Use webhook" and verify the URL.',
+				displayName:
+					'Copy the webhook URL above and paste it into LINE Developers Console under Messaging API > Webhook URL. Make sure to enable "Use webhook" and verify the URL.',
 				name: 'webhookInstructions',
 				type: 'notice',
 				default: '',
+			},
+			{
+				displayName: 'Download Binary Content',
+				name: 'downloadBinary',
+				type: 'boolean',
+				default: false,
+				description:
+					'Whether to automatically download binary content (image, video, audio, file) when received',
+			},
+			{
+				displayName: 'Binary Property Name',
+				name: 'binaryPropertyName',
+				type: 'string',
+				displayOptions: {
+					show: {
+						downloadBinary: [true],
+					},
+				},
+				default: 'data',
+				description: 'Name of the binary property to store the downloaded content',
 			},
 		],
 	};
@@ -138,7 +160,10 @@ export class LineTrigger implements INodeType {
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
 		const credentials = await this.getCredentials('lineMessagingApi');
 		const channelSecret = credentials.channelSecret as string;
+		const channelAccessToken = credentials.channelAccessToken as string;
 		const events = this.getNodeParameter('events', []) as string[];
+		const downloadBinary = this.getNodeParameter('downloadBinary', false) as boolean;
+		const binaryPropertyName = this.getNodeParameter('binaryPropertyName', 'data') as string;
 
 		const req = this.getRequestObject();
 		const body = this.getBodyData();
@@ -146,17 +171,11 @@ export class LineTrigger implements INodeType {
 		// Verify LINE signature
 		const signature = req.headers['x-line-signature'] as string;
 		if (!signature) {
-			throw new NodeOperationError(
-				this.getNode(),
-				'Missing x-line-signature header',
-			);
+			throw new NodeOperationError(this.getNode(), 'Missing x-line-signature header');
 		}
 
 		const bodyString = JSON.stringify(body);
-		const hash = crypto
-			.createHmac('sha256', channelSecret)
-			.update(bodyString)
-			.digest('base64');
+		const hash = crypto.createHmac('sha256', channelSecret).update(bodyString).digest('base64');
 
 		if (signature !== hash) {
 			throw new NodeOperationError(
@@ -298,7 +317,47 @@ export class LineTrigger implements INodeType {
 					break;
 			}
 
-			returnData.push(eventData);
+			// Download binary content if enabled and message type is binary
+			let itemData: any = { json: eventData };
+
+			if (downloadBinary && event.type === 'message') {
+				const messageType = event.message.type;
+				if (['image', 'video', 'audio', 'file'].includes(messageType)) {
+					try {
+						const response = await this.helpers.httpRequest({
+							method: 'GET',
+							url: `https://api-data.line.me/v2/bot/message/${event.message.id}/content`,
+							encoding: 'arraybuffer',
+							json: false,
+							returnFullResponse: true,
+							headers: {
+								Authorization: `Bearer ${channelAccessToken}`,
+							},
+						});
+
+						const binaryData = await this.helpers.prepareBinaryData(
+							response.body as Buffer,
+							event.message.fileName || `content_${event.message.id}`,
+							response.headers['content-type'] as string,
+						);
+
+						itemData.binary = {
+							[binaryPropertyName]: binaryData,
+						};
+
+						// Add binary info to json
+						eventData.binaryDownloaded = true;
+						eventData.binaryPropertyName = binaryPropertyName;
+						eventData.mimeType = response.headers['content-type'];
+						eventData.size = (response.body as Buffer).length;
+					} catch (error) {
+						eventData.binaryDownloadError =
+							error instanceof Error ? error.message : 'Failed to download binary content';
+					}
+				}
+			}
+
+			returnData.push(itemData);
 		}
 
 		// If no events matched the filter, return empty
@@ -309,7 +368,7 @@ export class LineTrigger implements INodeType {
 		}
 
 		return {
-			workflowData: [this.helpers.returnJsonArray(returnData)],
+			workflowData: [returnData],
 		};
 	}
 }
