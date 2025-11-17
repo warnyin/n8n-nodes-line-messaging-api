@@ -176,8 +176,10 @@ export class LineTrigger implements INodeType {
 			throw new NodeOperationError(this.getNode(), 'Missing x-line-signature header');
 		}
 
-		const bodyString = JSON.stringify(body);
-		const hash = crypto.createHmac('sha256', channelSecret).update(bodyString).digest('base64');
+		// Get the raw body for signature verification
+		// LINE calculates signature from raw body, not parsed JSON
+		const rawBody = (req as any).rawBody || JSON.stringify(body);
+		const hash = crypto.createHmac('sha256', channelSecret).update(rawBody).digest('base64');
 
 		if (signature !== hash) {
 			throw new NodeOperationError(
@@ -269,19 +271,20 @@ export class LineTrigger implements INodeType {
 					break;
 
 				case 'follow':
-					// No additional data needed
+					// Follow event - basic structure is enough
 					break;
 
 				case 'unfollow':
-					// No additional data needed
+					// Unfollow event - basic structure is enough
 					break;
 
 				case 'join':
-					// No additional data needed
+					// Join event - when bot joins a group or room
+					// The source object already contains group/room information
 					break;
 
 				case 'leave':
-					// No additional data needed
+					// Leave event - basic structure is enough
 					break;
 
 				case 'memberJoined':
@@ -316,6 +319,11 @@ export class LineTrigger implements INodeType {
 						type: event.things.type,
 						deviceId: event.things.deviceId,
 					};
+					break;
+
+				default:
+					// For any other event types, include the entire event object
+					eventData.rawEvent = event;
 					break;
 			}
 

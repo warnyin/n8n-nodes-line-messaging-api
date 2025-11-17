@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1] - 2025-11-18
+
+### Fixed
+- **LINE Trigger Webhook Signature Verification** (Critical Fix)
+  - Fixed signature verification using raw request body instead of re-stringified JSON
+  - Previous implementation caused signature mismatch, preventing all webhook events from being processed
+  - This fix resolves the "No output data returned" issue for join events and all other event types
+
+### Improved
+- **LINE Trigger Event Handling**
+  - Added default case in event switch statement for better error handling
+  - Improved comments for join, follow, unfollow, and leave events
+  - Better debugging support for unexpected event types
+
 ## [0.6.0] - 2025-11-16
 
 ### Changed
