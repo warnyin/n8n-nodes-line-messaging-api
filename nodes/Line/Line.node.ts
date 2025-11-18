@@ -371,6 +371,49 @@ export class Line implements INodeType {
 				description: 'Whether to add quick reply buttons to the message (max 13 items)',
 			},
 			{
+				displayName: 'Quick Reply Mode',
+				name: 'quickReplyMode',
+				type: 'options',
+				displayOptions: {
+					show: {
+						resource: ['message'],
+						operation: ['push', 'reply', 'multicast', 'broadcast'],
+						addQuickReply: [true],
+					},
+				},
+				options: [
+					{
+						name: 'Builder',
+						value: 'builder',
+						description: 'Use the visual builder to configure quick reply items',
+					},
+					{
+						name: 'JSON',
+						value: 'json',
+						description: 'Provide quick reply configuration as JSON',
+					},
+				],
+				default: 'builder',
+				description: 'Choose how to configure quick reply buttons',
+			},
+			{
+				displayName: 'Quick Reply JSON',
+				name: 'quickReplyJson',
+				type: 'json',
+				displayOptions: {
+					show: {
+						resource: ['message'],
+						operation: ['push', 'reply', 'multicast', 'broadcast'],
+						addQuickReply: [true],
+						quickReplyMode: ['json'],
+					},
+				},
+				default: '{ "items": [] }',
+				required: true,
+				description: 'Quick reply configuration in JSON format. Must contain an "items" array.',
+				placeholder: '{\n  "items": [\n    {\n      "type": "action",\n      "action": {\n        "type": "message",\n        "label": "Yes",\n        "text": "Yes"\n      }\n    }\n  ]\n}',
+			},
+			{
 				displayName: 'Quick Reply Items',
 				name: 'quickReplyItems',
 				type: 'fixedCollection',
@@ -382,6 +425,7 @@ export class Line implements INodeType {
 						resource: ['message'],
 						operation: ['push', 'reply', 'multicast', 'broadcast'],
 						addQuickReply: [true],
+						quickReplyMode: ['builder'],
 					},
 				},
 				default: {},
@@ -648,50 +692,65 @@ export class Line implements INodeType {
 			// Add quick reply if enabled
 			const addQuickReply = this.getNodeParameter('addQuickReply', itemIndex, false) as boolean;
 			if (addQuickReply) {
-				const quickReplyItems = this.getNodeParameter('quickReplyItems', itemIndex, {
-					items: [],
-				}) as { items: any[] };
+				const quickReplyMode = this.getNodeParameter('quickReplyMode', itemIndex, 'builder') as string;
 
-				if (quickReplyItems.items && quickReplyItems.items.length > 0) {
-					const items = quickReplyItems.items.map((item: any) => {
-						const quickReplyItem: any = {
-							type: 'action',
-							action: {
-								type: item.actionType,
-								label: item.label,
-							},
-						};
+				if (quickReplyMode === 'json') {
+					// JSON mode: Use the raw JSON input
+					const quickReplyJson = this.getNodeParameter('quickReplyJson', itemIndex) as string;
+					const quickReplyData = typeof quickReplyJson === 'string' 
+						? JSON.parse(quickReplyJson) 
+						: quickReplyJson;
+					
+					if (quickReplyData && quickReplyData.items) {
+						message.quickReply = quickReplyData;
+					}
+				} else {
+					// Builder mode: Use the collection input
+					const quickReplyItems = this.getNodeParameter('quickReplyItems', itemIndex, {
+						items: [],
+					}) as { items: any[] };
 
-						// Add optional image URL
-						if (item.imageUrl) {
-							quickReplyItem.imageUrl = item.imageUrl;
-						}
+					if (quickReplyItems.items && quickReplyItems.items.length > 0) {
+						const items = quickReplyItems.items.map((item: any) => {
+							const quickReplyItem: any = {
+								type: 'action',
+								action: {
+									type: item.actionType,
+									label: item.label,
+								},
+							};
 
-						// Add action-specific properties
-						switch (item.actionType) {
-							case 'message':
-								quickReplyItem.action.text = item.text;
-								break;
-							case 'postback':
-								quickReplyItem.action.data = item.data;
-								if (item.displayText) {
-									quickReplyItem.action.displayText = item.displayText;
-								}
-								break;
-							case 'uri':
-								quickReplyItem.action.uri = item.uri;
-								break;
-							case 'datetimepicker':
-								quickReplyItem.action.data = item.datetimeData;
-								quickReplyItem.action.mode = item.mode || 'date';
-								break;
-							// camera, cameraRoll, and location actions only need type and label
-						}
+							// Add optional image URL
+							if (item.imageUrl) {
+								quickReplyItem.imageUrl = item.imageUrl;
+							}
 
-						return quickReplyItem;
-					});
+							// Add action-specific properties
+							switch (item.actionType) {
+								case 'message':
+									quickReplyItem.action.text = item.text;
+									break;
+								case 'postback':
+									quickReplyItem.action.data = item.data;
+									if (item.displayText) {
+										quickReplyItem.action.displayText = item.displayText;
+									}
+									break;
+								case 'uri':
+									quickReplyItem.action.uri = item.uri;
+									break;
+								case 'datetimepicker':
+									quickReplyItem.action.data = item.datetimeData;
+									quickReplyItem.action.mode = item.mode || 'date';
+									break;
+								// camera, cameraRoll, and location actions only need type and label
+							}
 
-					message.quickReply = { items };
+							return quickReplyItem;
+						});
+
+						message.quickReply = { items };
+					}
 				}
 			}
 

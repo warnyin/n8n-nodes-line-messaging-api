@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.1] - 2025-11-18
+
+### Added
+- **Quick Reply JSON Mode** (Enhanced Feature!)
+  - Added "Quick Reply Mode" selector to choose between Builder or JSON input
+  - New "Quick Reply JSON" field for direct JSON input
+  - Supports pasting complete Quick Reply configuration as JSON
+  - Perfect for complex configurations with emojis, special characters, or Thai text
+  - JSON mode bypasses the visual builder for maximum flexibility
+
+### Benefits
+- **Faster configuration**: Copy-paste existing Quick Reply JSON directly
+- **Better for non-English text**: Easily use Thai, Japanese, Chinese, and other languages
+- **Emoji support**: Include emojis in labels without encoding issues
+- **Complex configurations**: Handle advanced Quick Reply setups more easily
+- **Flexibility**: Choose between visual builder (simple cases) or JSON (complex cases)
+
+### Example JSON Input
+```json
+{
+  "items": [
+    {
+      "type": "action",
+      "action": {
+        "type": "message",
+        "label": "🚀 เริ่มต้น",
+        "text": "!เริ่มต้น"
+      }
+    }
+  ]
+}
+```
+
 ## [0.7.0] - 2025-11-18
 
 ### Added
