@@ -356,6 +356,195 @@ export class Line implements INodeType {
 				required: true,
 				description: 'The flex message container in JSON format',
 			},
+			// Quick Reply fields
+			{
+				displayName: 'Add Quick Reply',
+				name: 'addQuickReply',
+				type: 'boolean',
+				displayOptions: {
+					show: {
+						resource: ['message'],
+						operation: ['push', 'reply', 'multicast', 'broadcast'],
+					},
+				},
+				default: false,
+				description: 'Whether to add quick reply buttons to the message (max 13 items)',
+			},
+			{
+				displayName: 'Quick Reply Items',
+				name: 'quickReplyItems',
+				type: 'fixedCollection',
+				typeOptions: {
+					multipleValues: true,
+				},
+				displayOptions: {
+					show: {
+						resource: ['message'],
+						operation: ['push', 'reply', 'multicast', 'broadcast'],
+						addQuickReply: [true],
+					},
+				},
+				default: {},
+				options: [
+					{
+						name: 'items',
+						displayName: 'Item',
+						values: [
+							{
+								displayName: 'Action Type',
+								name: 'actionType',
+								type: 'options',
+								options: [
+									{
+										name: 'Message',
+										value: 'message',
+										description: 'Send a text message when tapped',
+									},
+									{
+										name: 'Postback',
+										value: 'postback',
+										description: 'Send postback data',
+									},
+									{
+										name: 'URI',
+										value: 'uri',
+										description: 'Open a URL',
+									},
+									{
+										name: 'Location',
+										value: 'location',
+										description: 'Send user location',
+									},
+									{
+										name: 'Camera',
+										value: 'camera',
+										description: 'Open camera',
+									},
+									{
+										name: 'Camera Roll',
+										value: 'cameraRoll',
+										description: 'Open camera roll',
+									},
+									{
+										name: 'Datetime Picker',
+										value: 'datetimepicker',
+										description: 'Open date/time picker',
+									},
+								],
+								default: 'message',
+								description: 'The type of action to perform',
+							},
+							{
+								displayName: 'Label',
+								name: 'label',
+								type: 'string',
+								default: '',
+								required: true,
+								description: 'Text displayed on the quick reply button',
+							},
+							{
+								displayName: 'Icon URL',
+								name: 'imageUrl',
+								type: 'string',
+								default: '',
+								description:
+									'Optional icon image URL (HTTPS only). If not set, default icons will be used for camera/location actions.',
+							},
+							{
+								displayName: 'Text',
+								name: 'text',
+								type: 'string',
+								displayOptions: {
+									show: {
+										actionType: ['message'],
+									},
+								},
+								default: '',
+								required: true,
+								description: 'Message text to send when button is tapped',
+							},
+							{
+								displayName: 'Postback Data',
+								name: 'data',
+								type: 'string',
+								displayOptions: {
+									show: {
+										actionType: ['postback'],
+									},
+								},
+								default: '',
+								required: true,
+								description: 'Postback data string (max 300 characters)',
+							},
+							{
+								displayName: 'Display Text',
+								name: 'displayText',
+								type: 'string',
+								displayOptions: {
+									show: {
+										actionType: ['postback'],
+									},
+								},
+								default: '',
+								description: 'Optional text displayed in chat when button is tapped',
+							},
+							{
+								displayName: 'URI',
+								name: 'uri',
+								type: 'string',
+								displayOptions: {
+									show: {
+										actionType: ['uri'],
+									},
+								},
+								default: '',
+								required: true,
+								description: 'URL to open (http, https, tel, or line schemes)',
+							},
+							{
+								displayName: 'Datetime Mode',
+								name: 'mode',
+								type: 'options',
+								displayOptions: {
+									show: {
+										actionType: ['datetimepicker'],
+									},
+								},
+								options: [
+									{
+										name: 'Date',
+										value: 'date',
+									},
+									{
+										name: 'Time',
+										value: 'time',
+									},
+									{
+										name: 'Datetime',
+										value: 'datetime',
+									},
+								],
+								default: 'date',
+								description: 'Picker mode',
+							},
+							{
+								displayName: 'Datetime Data',
+								name: 'datetimeData',
+								type: 'string',
+								displayOptions: {
+									show: {
+										actionType: ['datetimepicker'],
+									},
+								},
+								default: '',
+								required: true,
+								description: 'Data returned via postback event',
+							},
+						],
+					},
+				],
+				description: 'Quick reply button items (max 13)',
+			},
 			// Message:Get Content fields
 			{
 				displayName: 'Message ID',
@@ -454,6 +643,56 @@ export class Line implements INodeType {
 					message.contents =
 						typeof flexContents === 'string' ? JSON.parse(flexContents) : flexContents;
 					break;
+			}
+
+			// Add quick reply if enabled
+			const addQuickReply = this.getNodeParameter('addQuickReply', itemIndex, false) as boolean;
+			if (addQuickReply) {
+				const quickReplyItems = this.getNodeParameter('quickReplyItems', itemIndex, {
+					items: [],
+				}) as { items: any[] };
+
+				if (quickReplyItems.items && quickReplyItems.items.length > 0) {
+					const items = quickReplyItems.items.map((item: any) => {
+						const quickReplyItem: any = {
+							type: 'action',
+							action: {
+								type: item.actionType,
+								label: item.label,
+							},
+						};
+
+						// Add optional image URL
+						if (item.imageUrl) {
+							quickReplyItem.imageUrl = item.imageUrl;
+						}
+
+						// Add action-specific properties
+						switch (item.actionType) {
+							case 'message':
+								quickReplyItem.action.text = item.text;
+								break;
+							case 'postback':
+								quickReplyItem.action.data = item.data;
+								if (item.displayText) {
+									quickReplyItem.action.displayText = item.displayText;
+								}
+								break;
+							case 'uri':
+								quickReplyItem.action.uri = item.uri;
+								break;
+							case 'datetimepicker':
+								quickReplyItem.action.data = item.datetimeData;
+								quickReplyItem.action.mode = item.mode || 'date';
+								break;
+							// camera, cameraRoll, and location actions only need type and label
+						}
+
+						return quickReplyItem;
+					});
+
+					message.quickReply = { items };
+				}
 			}
 
 			return message;

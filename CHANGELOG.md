@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2025-11-18
+
+### Added
+- **Quick Reply Support** (NEW Feature!)
+  - Added "Add Quick Reply" toggle for all message operations (push, reply, multicast, broadcast)
+  - Support for up to 13 quick reply buttons per message
+  - Multiple action types available:
+    - **Message**: Send text when button is tapped
+    - **Postback**: Send postback data to webhook
+    - **URI**: Open a URL (http, https, tel, or line schemes)
+    - **Location**: Request user's location
+    - **Camera**: Open device camera
+    - **Camera Roll**: Open camera roll
+    - **Datetime Picker**: Open date/time picker
+  - Configurable properties for each button:
+    - Label (required) - Text displayed on button
+    - Icon URL (optional) - Custom icon image
+    - Action-specific fields (text, URI, postback data, datetime mode, etc.)
+  - Automatic quick reply object construction in buildMessage function
+  - Works with all message types (text, image, video, audio, location, sticker, flex)
+
+### Benefits
+- **Interactive conversations**: Users can quickly respond with predefined options
+- **Improved UX**: Buttons appear at bottom of chat for easy tapping
+- **Versatile actions**: Support for messages, postbacks, URLs, and special actions
+- **Flexible configuration**: Customize each button with labels, icons, and behaviors
+- **LINE API compliant**: Follows official LINE Messaging API specifications
+
 ## [0.6.1] - 2025-11-18
 
 ### Fixed
